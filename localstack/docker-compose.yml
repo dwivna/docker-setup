@@ -1,0 +1,34 @@
+services:
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4566:4566"            # LocalStack Edge port for all AWS services
+    environment:
+      - SERVICES=lambda,apigateway,s3,dynamodb,opensearch    # Enable only Lambda and API Gateway
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+      - DEBUG=1                        # Set to 1 for verbose logging
+      - PERSISTENCE=/tmp/localstack_data  # Persist LocalStack state
+    volumes:
+      - "./localstack_data:/tmp/localstack_data"  # Volume for LocalStack data
+      - "/var/run/docker.sock:/var/run/docker.sock"  # Mount Docker socket 
+    networks:
+      - localstack-network  
+  terraform:
+    image: hashicorp/terraform:latest
+    container_name: terraform
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+    working_dir: /workspace
+    volumes:
+      - ./terraform:/workspace
+    entrypoint: ["tail", "-f", "/dev/null"]
+    
+  
+networks:
+  localstack-network:
+    name: localstack-network
