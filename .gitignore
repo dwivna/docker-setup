@@ -2,3 +2,8 @@
 /redis/.vscode/
 /redis/example/target/
 /redis/example/.idea/
+/localstack/terraform/.terraform
+/localstack/terraform/.terraform.lock.hcl
+/localstack/terraform/terraform.tfstate
+/localstack/terraform/terraform.tfstate.backup
+/localstack/localstack_data

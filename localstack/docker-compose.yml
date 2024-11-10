@@ -4,8 +4,10 @@ services:
     container_name: localstack
     ports:
       - "4566:4566"            # LocalStack Edge port for all AWS services
+      - "4572:4572"            # Explicit S3 service port
+      - "8000:8000"            # Explicit DynamoDB service port
     environment:
-      - SERVICES=lambda,apigateway,s3,dynamodb,opensearch    # Enable only Lambda and API Gateway
+      - SERVICES=s3,dynamodb    # Enable only required services
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
       - AWS_DEFAULT_REGION=us-east-1
@@ -13,7 +15,7 @@ services:
       - PERSISTENCE=/tmp/localstack_data  # Persist LocalStack state
     volumes:
       - "./localstack_data:/tmp/localstack_data"  # Volume for LocalStack data
-      - "/var/run/docker.sock:/var/run/docker.sock"  # Mount Docker socket 
+      - "/var/run/docker.sock:/var/run/docker.sock"  # Mount Docker socket     
     networks:
       - localstack-network  
   terraform:
@@ -24,11 +26,25 @@ services:
       - AWS_SECRET_ACCESS_KEY=test
       - AWS_DEFAULT_REGION=us-east-1
     working_dir: /workspace
+    depends_on:
+      - localstack
+    networks:
+      - localstack-network    
     volumes:
       - ./terraform:/workspace
-    entrypoint: ["tail", "-f", "/dev/null"]
-    
-  
+    entrypoint: ["tail", "-f", "/dev/null"] 
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    container_name: dynamodb_admin
+    depends_on:
+      - localstack
+    networks:
+      - localstack-network  
+    ports:
+      - "8001:8001"
+    environment:
+      - DYNAMO_ENDPOINT=http://localstack:4566     
+
 networks:
   localstack-network:
-    name: localstack-network
+    driver: bridge      
