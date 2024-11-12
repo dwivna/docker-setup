@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: info-portal-service
+
+# LocalStack DynamoDB endpoint
+aws:
+  s3:
+    endpoint: http://s3.localhost.localstack.cloud:4566
+  dynamodb:
+    endpoint: http://localhost:4566
+  region: us-east-1

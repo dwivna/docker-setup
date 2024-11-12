@@ -4,10 +4,8 @@ services:
     container_name: localstack
     ports:
       - "4566:4566"            # LocalStack Edge port for all AWS services
-      - "4572:4572"            # Explicit S3 service port
-      - "8000:8000"            # Explicit DynamoDB service port
     environment:
-      - SERVICES=s3,dynamodb    # Enable only required services
+      - SERVICES=s3,dynamodb,ec2    # Enable only required services
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
       - AWS_DEFAULT_REGION=us-east-1
@@ -45,6 +43,8 @@ services:
     environment:
       - DYNAMO_ENDPOINT=http://localstack:4566     
 
+volumes:
+  localstack_data:
 networks:
   localstack-network:
     driver: bridge      
